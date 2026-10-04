@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="sl">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Naročanje · ms://nailartist</title>
+  <meta name="description" content="Izberi storitve in rezerviraj prvi prosti termin.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%230a0a0b'/%3E%3Ctext x='16' y='21' font-family='monospace' font-size='12' fill='%23f2eee9' text-anchor='middle'%3Ems:/%3C/text%3E%3C/svg%3E">
+  <script src="/motion.js"></script>
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header scrolled">
+    <a class="logo" href="/">ms<span>://</span></a>
+    <nav class="nav" aria-label="Glavna navigacija">
+
+      <button class="theme-toggle" type="button" aria-pressed="false"><i></i></button>
+      <a href="/#delo">/delo</a>
+      <a href="/#info">/info</a>
+      <a href="/pogoji.html">/pogoji</a>
+    </nav>
+  </header>
+
+  <main class="book">
+    <div class="book-top">
+      <div>
+        <span class="eyebrow mono">ms://nailartist/naročanje</span>
+        <h1>Rezerviraj termin</h1>
+      </div>
+      <ol class="stepper mono" aria-label="Koraki">
+        <li data-step="1">01 storitve</li>
+        <li data-step="2">02 termin</li>
+        <li data-step="3">03 podatki</li>
+      </ol>
+    </div>
+
+    <div class="book-grid">
+      <div id="pane" aria-live="polite"></div>
+      <aside class="summary" id="summary" aria-label="Pregled termina"></aside>
+    </div>
+  </main>
+
+  <div class="wipe" aria-hidden="true"><span>ms://</span></div>
+  <div class="cursor" aria-hidden="true"><div class="cursor-dot"></div><div class="cursor-ring"><b></b></div></div>
+
+  <script src="/slots.js" defer></script>
+  <script src="/demo-api.js" defer></script>
+  <script src="/main.js" defer></script>
+  <script src="/booking.js" defer></script>
+</body>
+</html>
