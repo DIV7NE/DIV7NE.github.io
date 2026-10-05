@@ -134,6 +134,8 @@ footer nav { display: flex; gap: 24px; }
 .svc[aria-pressed='true'] .tick { border-color: var(--pink); }
 .svc[aria-pressed='true'] .tick::after { transform: scale(1); }
 .svc .name { font-weight: 500; }
+.surcharge { display: block; width: fit-content; max-width: 100%; margin-top: 10px; padding: 6px 10px; border: 1px solid var(--pink); border-radius: 8px; color: var(--ink); font: 500 13px/1.35 var(--mono); }
+.surcharge-note { color: var(--ink); }
 .svc .desc { display: block; font-size: 14px; color: var(--ink-3); font-weight: 400; margin-top: 2px; }
 .svc .meta { color: var(--ink-2); text-align: right; white-space: nowrap; }
 

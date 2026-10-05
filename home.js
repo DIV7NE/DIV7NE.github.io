@@ -137,6 +137,7 @@
         el('div', { class: 'lvl-body' },
           el('h3', {}, s.title || `Nivo ${s.level}`),
           el('p', {}, s.desc || ''),
+          s.surcharge ? el('span', { class: 'surcharge mono' }, s.surcharge) : '',
           el('span', { class: 'lvl-meta' }, el('span', {}, `+ ${fmtDur(s.min)}`), el('span', {}, `+ ${fmtEur(s.eur)}`)),
           el('span', { class: 'lvl-cta' }, 'izberi ta paket →')))));
     });

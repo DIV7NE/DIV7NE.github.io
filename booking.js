@@ -64,7 +64,7 @@ function viewServices(view) {
         onclick: () => toggle(s.id),
       },
         el('span', { class: `tick${exclusive ? '' : ' sq'}`, 'aria-hidden': 'true' }),
-        el('span', { class: 'name' }, s.name, s.desc ? el('span', { class: 'desc' }, s.desc) : null, s.detail ? el('span', { class: 'desc' }, s.detail) : null),
+        el('span', { class: 'name' }, s.name, s.desc ? el('span', { class: 'desc' }, s.desc) : null, s.detail ? el('span', { class: 'desc' }, s.detail) : null, s.surcharge ? el('span', { class: 'surcharge mono' }, s.surcharge) : null),
         el('span', { class: 'dots', 'aria-hidden': 'true' }),
         el('span', { class: 'meta mono' }, `${fmtDur(s.min)} · ${fmtEur(s.eur)}`))));
     }
@@ -228,7 +228,7 @@ function renderSummary() {
     const list = el('ul', { class: 'sum-list' });
     for (const s of items) {
       list.append(el('li', {},
-        el('span', {}, s.name, el('span', { class: 'm mono' }, fmtDur(s.min))),
+        el('span', {}, s.name, el('span', { class: 'm mono' }, fmtDur(s.min)), s.surcharge ? el('span', { class: 'm surcharge-note mono' }, s.surcharge) : null),
         el('span', { class: 'mono' }, fmtEur(s.eur)),
         state.step === 1 ? el('button', { type: 'button', class: 'x', 'aria-label': `Odstrani ${s.name}`, onclick: () => toggle(s.id) }, '×') : el('span')));
     }
