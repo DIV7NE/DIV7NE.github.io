@@ -223,17 +223,6 @@ footer nav { display: flex; gap: 24px; }
 .wipe { position: fixed; inset: 0; z-index: 200; background: var(--pink); transform: translateY(100%); pointer-events: none; display: grid; place-items: center; }
 .wipe span { font: 500 clamp(40px, 8vw, 96px)/1 var(--mono); color: var(--pink-ink); letter-spacing: -0.04em; }
 .wipe.cover { transform: none; }
-
-/* cursor */
-.cursor { position: fixed; left: 0; top: 0; z-index: 150; pointer-events: none; display: none; }
-.cursor-dot { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--pink); }
-.cursor-ring { position: absolute; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%; border: 1px solid rgba(242,238,233,0.4); display: grid; place-items: center; transition: width 0.35s var(--ease), height 0.35s var(--ease), margin 0.35s var(--ease), background 0.35s, border-color 0.35s; }
-.cursor-ring b { font: 500 11px var(--mono); color: var(--pink-ink); opacity: 0; transition: opacity 0.2s; }
-.cursor.label .cursor-ring { width: 84px; height: 84px; margin: -42px 0 0 -42px; background: var(--pink); border-color: var(--pink); }
-.cursor.label .cursor-ring b { opacity: 1; }
-.cursor.label .cursor-dot { opacity: 0; }
-@media (pointer: fine) { [data-motion='on'] .cursor { display: block; } }
-
 [data-motion='off'] *, [data-motion='off'] *::before, [data-motion='off'] *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
 .wiping .wipe { transform: none; }
 
@@ -253,7 +242,6 @@ footer nav { display: flex; gap: 24px; }
 [data-theme='light'] .svc[aria-pressed='true'] { border-color: var(--ink); background: var(--bg); box-shadow: 4px 4px 0 var(--ink); }
 [data-theme='light'] .first-slot { background: var(--bg-2); }
 [data-theme='light'] .day[aria-pressed='true'] { border-color: var(--ink); background: var(--bg); box-shadow: 3px 3px 0 var(--ink); }
-[data-theme='light'] .cursor-ring { border-color: rgba(13,13,13,0.45); }
 /* dotted price leaders, as on her printed cenik */
 [data-theme='light'] .svc { grid-template-columns: 22px minmax(0, max-content) minmax(16px, 1fr) auto; }
 [data-theme='light'] .svc .dots { display: block; align-self: end; margin-bottom: 0.4em; border-bottom: 3px dotted var(--ink); }

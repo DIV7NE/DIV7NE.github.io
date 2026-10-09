@@ -130,28 +130,6 @@ if (wipe && motionOn) {
   });
 }
 
-// cursor follower with contextual label
-const cursor = document.querySelector('.cursor');
-if (cursor && motionOn && matchMedia('(pointer: fine)').matches) {
-  const dot = cursor.querySelector('.cursor-dot');
-  const ring = cursor.querySelector('.cursor-ring');
-  const label = ring.querySelector('b');
-  let x = -100, y = -100, rx = x, ry = y;
-  addEventListener('pointermove', (e) => { x = e.clientX; y = e.clientY; dot.style.transform = `translate(${x}px, ${y}px)`; }, { passive: true });
-  const loop = () => {
-    rx += (x - rx) * 0.18;
-    ry += (y - ry) * 0.18;
-    ring.style.transform = `translate(${rx}px, ${ry}px)`;
-    requestAnimationFrame(loop);
-  };
-  loop();
-  document.addEventListener('pointerover', (e) => {
-    const t = e.target.closest('[data-cursor]');
-    cursor.classList.toggle('label', !!t);
-    if (t) label.textContent = t.dataset.cursor;
-  });
-}
-
 // magnetic buttons
 if (motionOn && matchMedia('(pointer: fine)').matches) {
   document.querySelectorAll('.magnetic').forEach((m) => {

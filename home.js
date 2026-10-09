@@ -54,7 +54,7 @@
       el('figcaption', {}, name, el('span', {}, String(i + 1).padStart(2, '0')))));
     typeOnView(name, `${file}.jpg`);
   });
-  track.append(el('a', { class: 'shot shot-end', href: 'https://www.instagram.com/ms.nailartist.zip/', target: '_blank', rel: 'noopener', 'data-cursor': 'instagram' },
+  track.append(el('a', { class: 'shot shot-end', href: 'https://www.instagram.com/ms.nailartist.zip/', target: '_blank', rel: 'noopener' },
     el('span', { class: 'serif' }, 'Še več na Instagramu →'), el('span', { class: 'mono muted' }, '@ms.nailartist.zip')));
   work.querySelector('.wc-all').textContent = String(PHOTOS.length).padStart(2, '0');
 
@@ -132,7 +132,7 @@
   const catalogReady = api('/api/services').then((cat) => {
     const art = cat.categories.flatMap((c) => c.services).filter((s) => s.slot === 'art');
     art.forEach((s, i) => {
-      levelsList.append(el('li', {}, el('a', { class: 'lvl', href: `/narocanje.html?izberi=${encodeURIComponent(s.id)}`, 'data-cursor': 'izberi' },
+      levelsList.append(el('li', {}, el('a', { class: 'lvl', href: `/narocanje.html?izberi=${encodeURIComponent(s.id)}` },
         el('div', { class: 'lvl-media' }, el('img', { src: `/img/${LEVEL_PHOTOS[i] || LEVEL_PHOTOS[0]}.webp`, alt: '', loading: 'lazy' })),
         el('div', { class: 'lvl-body' },
           el('h3', {}, s.title || `Nivo ${s.level}`),
