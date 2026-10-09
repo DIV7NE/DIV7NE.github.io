@@ -139,9 +139,6 @@ h2 em, .manifesto-text em, .cta-title em { color: var(--pink); }
 .ig-card .serif { font-size: clamp(32px, 4vw, 48px); line-height: 1.02; }
 .ig-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .ig-thumbs img { aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
-.hours { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 20px; }
-.hours dt { color: var(--ink-3); }
-.hours dd { margin: 0; }
 @media (max-width: 860px) { .info-grid { grid-template-columns: 1fr; } .info-list li { grid-template-columns: 1fr; gap: 4px; } }
 
 /* closing cta */

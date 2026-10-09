@@ -127,7 +127,7 @@
   addEventListener('resize', onTrack);
   onTrack();
 
-  // catalog-driven parts: nail art levels, prices, hours, next free slot
+  // catalog-driven parts: nail art levels, next free slot
   const levelsList = document.querySelector('.levels-list');
   const catalogReady = api('/api/services').then((cat) => {
     const art = cat.categories.flatMap((c) => c.services).filter((s) => s.slot === 'art');
@@ -141,11 +141,6 @@
           el('span', { class: 'lvl-meta' }, el('span', {}, `+ ${fmtDur(s.min)}`), el('span', {}, `+ ${fmtEur(s.eur)}`)),
           el('span', { class: 'lvl-cta' }, 'izberi ta paket →')))));
     });
-    const hours = document.querySelector('.hours');
-    for (const d of [1, 2, 3, 4, 5, 6, 0]) {
-      const h = cat.hours[d];
-      hours.append(el('dt', { class: 'mono' }, DAYS_SHORT[d]), el('dd', {}, h ? `${h[0]} – ${h[1]}` : 'zaprto'));
-    }
     const firstBase = cat.categories.find((c) => c.id === 'naravni').services[0];
     api(`/api/availability?services=${firstBase.id}`).then((av) => {
       const first = av.days[0];
