@@ -28,11 +28,13 @@
       }
       picked.push(s);
     }
+    if (picked.length > 1 && picked.some((s) => s.custom)) throw new Error('Storitve po dogovoru ni mogoče izbrati skupaj z drugimi. Pošlji posebno povpraševanje.');
     picked.sort((a, b) => catalog.slots[a.slot].rank - catalog.slots[b.slot].rank);
     return {
       services: picked,
       min: picked.reduce((t, s) => t + s.min, 0),
       eur: picked.reduce((t, s) => t + s.eur, 0),
+      custom: picked.some((s) => s.custom),
     };
   }
 

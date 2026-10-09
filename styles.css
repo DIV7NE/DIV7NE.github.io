@@ -244,7 +244,12 @@ footer nav { display: flex; gap: 24px; }
 [data-theme='light'] .first-slot { background: var(--bg-2); }
 [data-theme='light'] .day[aria-pressed='true'] { border-color: var(--ink); background: var(--bg); box-shadow: 3px 3px 0 var(--ink); }
 /* dotted price leaders, as on her printed cenik */
-[data-theme='light'] .svc { grid-template-columns: 22px minmax(0, max-content) minmax(16px, 1fr) auto; }
-[data-theme='light'] .svc .dots { display: block; align-self: end; margin-bottom: 0.4em; border-bottom: 3px dotted var(--ink); }
+[data-theme='light'] .svc { grid-template-columns: 22px minmax(0, max-content) minmax(110px, 1fr) auto; }
+/* the leader sits on the price's line (vertically centred); on phones there is no room, so it is dropped */
+[data-theme='light'] .svc .dots { display: block; align-self: center; position: relative; top: 5px; height: 0; border-bottom: 3px dotted var(--ink); }
+@media (max-width: 560px) {
+  [data-theme='light'] .svc { grid-template-columns: 22px 1fr auto; }
+  [data-theme='light'] .svc .dots { display: none; }
+}
 [data-theme='light'] .svc .meta { color: var(--ink); }
 [data-theme='light'] .sum-list .x { font: 18px/1 system-ui, sans-serif; }

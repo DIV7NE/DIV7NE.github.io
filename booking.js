@@ -14,12 +14,17 @@ sheet.addEventListener('change', fitSheet);
 const byId = (id) => state.catalog.categories.flatMap((c) => c.services).find((s) => s.id === id);
 const rank = (s) => state.catalog.slots[s.slot].rank;
 const picked = () => state.selected.map(byId).sort((a, b) => rank(a) - rank(b));
-const totals = () => picked().reduce((t, s) => ({ min: t.min + s.min, eur: t.eur + s.eur }), { min: 0, eur: 0 });
+const totals = () => picked().reduce((t, s) => ({ min: t.min + s.min, eur: t.eur + s.eur, custom: t.custom || !!s.custom }), { min: 0, eur: 0, custom: false });
+// a service priced "po dogovoru" is not part of the sum, it is agreed with Marta before the work starts
+const isRequest = () => picked().some((s) => s.custom);
+const fmtPrice = (t) => (t.custom ? (t.eur ? `${fmtEur(t.eur)} + po dogovoru` : 'po dogovoru') : fmtEur(t.eur));
 
 function toggle(id) {
   const s = byId(id);
   if (state.selected.includes(id)) state.selected = state.selected.filter((x) => x !== id);
+  else if (s.custom) state.selected = [id]; // an inquiry, never mixed with bookable services
   else {
+    state.selected = state.selected.filter((x) => !byId(x).custom);
     if (state.catalog.slots[s.slot].exclusive) state.selected = state.selected.filter((x) => byId(x).slot !== s.slot);
     state.selected.push(id);
   }
@@ -32,8 +37,11 @@ function toggle(id) {
 function go(step) {
   state.step = step;
   state.error = step === 3 ? '' : state.error;
+  const req = isRequest();
   document.querySelectorAll('.stepper li').forEach((li) => {
     const n = Number(li.dataset.step);
+    li.hidden = req && n === 2;
+    if (n === 3) li.textContent = req ? '02 podatki' : '03 podatki';
     li.classList.toggle('on', n === step);
     li.classList.toggle('done', n < step);
   });
@@ -67,7 +75,7 @@ function viewServices(view) {
         el('span', { class: `tick${exclusive ? '' : ' sq'}`, 'aria-hidden': 'true' }),
         el('span', { class: 'name' }, s.name, s.desc ? el('span', { class: 'desc' }, s.desc) : null, s.detail ? el('span', { class: 'desc' }, s.detail) : null, s.surcharge ? el('span', { class: 'surcharge mono' }, s.surcharge) : null),
         el('span', { class: 'dots', 'aria-hidden': 'true' }),
-        el('span', { class: 'meta mono' }, `${fmtDur(s.min)} · ${fmtEur(s.eur)}`))));
+        el('span', { class: 'meta mono' }, s.custom ? 'po dogovoru' : `${fmtDur(s.min)} · ${fmtEur(s.eur)}`))));
     }
     view.append(el('section', { class: 'cat' }, el('h2', {}, c.name), c.note ? el('p', { class: 'note' }, c.note) : el('p', { class: 'note' }), list));
   }
@@ -147,13 +155,14 @@ function viewSlots(view) {
 
 function viewForm(view) {
   const form = el('form', { class: 'form', id: 'book-form', novalidate: '' });
+  const needNote = picked().some((s) => s.custom);
   const field = (id, label, input, hint) => el('div', { class: 'field' }, el('label', { for: id }, label), input, hint ? el('p', { class: 'hint', id: `${id}-hint` }, hint) : null);
   form.append(
     field('f-name', 'Ime in priimek', el('input', { id: 'f-name', name: 'name', autocomplete: 'name', required: '', maxlength: '80' })),
     field('f-phone', 'Telefon', el('input', { id: 'f-phone', name: 'phone', type: 'tel', autocomplete: 'tel', required: '', maxlength: '20', pattern: '\\+?[0-9 \\(\\)\\/\\-]{6,20}' })),
     field('f-email', 'E-pošta (neobvezno)', el('input', { id: 'f-email', name: 'email', type: 'email', autocomplete: 'email', maxlength: '120' })),
-    field('f-note', 'Opomba ali inspiracija (neobvezno)', el('textarea', { id: 'f-note', name: 'note', maxlength: '500', 'aria-describedby': 'f-note-hint', placeholder: 'npr. želim kratke mandljeve oblike, inspiracija na IG …' }),
-      'Prosim, ne vpisuj podatkov o zdravju (npr. bolezni nohtov ali kože). O tem se pogovoriva v salonu.'),
+    field('f-note', needNote ? 'Opiši, kaj želiš (obvezno)' : 'Opomba ali inspiracija (neobvezno)', el('textarea', { id: 'f-note', name: 'note', maxlength: '500', 'aria-describedby': 'f-note-hint', ...(needNote ? { required: '', minlength: '5' } : {}), placeholder: 'npr. želim kratke mandljeve oblike, inspiracija na IG …' }),
+      (needNote ? 'Opiši, kaj želiš in kako si predstavljaš. Odgovorim ti in se dogovoriva za ceno in termin. ' : '') + 'Prosim, ne vpisuj podatkov o zdravju (npr. bolezni nohtov ali kože). O tem se pogovoriva v salonu.'),
     el('div', { class: 'hp', 'aria-hidden': 'true' }, el('label', {}, 'Spletna stran', el('input', { name: 'website', tabindex: '-1', autocomplete: 'off' }))),
   );
   form.addEventListener('submit', submit);
@@ -172,7 +181,7 @@ async function submit(e) {
     state.done = await api('/api/bookings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, services: state.selected, date: state.date, time: state.time }),
+      body: JSON.stringify({ ...data, services: state.selected, ...(isRequest() ? {} : { date: state.date, time: state.time }) }),
     });
     state.busy = false;
     summary.hidden = true;
@@ -202,6 +211,17 @@ function icsLink(b) {
 function viewDone(view) {
   const b = state.done;
   document.querySelector('.book-grid').style.gridTemplateColumns = '1fr';
+  if (b.request) {
+    view.append(el('div', { class: 'done' },
+      el('span', { class: 'eyebrow mono' }, 'povpraševanje je poslano'),
+      el('h2', {}, 'Hvala, ', el('em', {}, 'javim se'), '!'),
+      b.demo ? el('p', { class: 'notice mono' }, 'To je predogled strani. To povpraševanje ni shranjeno.') : null,
+      el('div', { class: 'first-slot' }, el('span', { class: 'mono' }, b.services.join(' + ')), el('p', { class: 'when' }, 'termin še ni rezerviran')),
+      el('p', { class: 'muted' }, 'Odgovorim ti na telefon ali e-pošto, da se dogovoriva za ceno in termin. Če se s ceno ne strinjava, te storitve ne izvedem in zanjo ne plačaš.'),
+      el('div', { class: 'hero-actions' }, el('a', { class: 'btn btn-pink', href: '/' }, 'Nazaj na začetek'))));
+    document.querySelectorAll('.stepper li').forEach((li) => { li.classList.remove('on'); li.classList.add('done'); });
+    return;
+  }
   view.append(el('div', { class: 'done' },
     el('span', { class: 'eyebrow mono' }, 'termin je rezerviran'),
     el('h2', {}, 'Se ', el('em', {}, 'vidiva'), '!'),
@@ -224,7 +244,7 @@ function renderSummary() {
   summary.classList.toggle('open', state.open);
   summary.replaceChildren();
   summary.append(el('button', { type: 'button', class: 'toggle mono', 'aria-expanded': String(state.open), onclick: () => { state.open = !state.open; renderSummary(); } },
-    el('span', {}, items.length ? `${items.length} ${['storitev', 'storitvi', 'storitve', 'storitve'][Math.min(items.length, 4) - 1]} · ${fmtDur(t.min)} · ${fmtEur(t.eur)}` : 'Pregled termina'),
+    el('span', {}, items.length ? (isRequest() ? 'Povpraševanje · po dogovoru' : `${items.length} ${['storitev', 'storitvi', 'storitve', 'storitve'][Math.min(items.length, 4) - 1]} · ${fmtDur(t.min)} · ${fmtPrice(t)}`) : 'Pregled termina'),
     el('span', {}, state.open ? 'skrij ↓' : 'pokaži ↑')));
   summary.append(el('h2', {}, 'Pregled termina'));
 
@@ -233,12 +253,12 @@ function renderSummary() {
     const list = el('ul', { class: 'sum-list' });
     for (const s of items) {
       list.append(el('li', {},
-        el('span', {}, s.name, el('span', { class: 'm mono' }, fmtDur(s.min)), s.surcharge ? el('span', { class: 'm surcharge-note mono' }, s.surcharge) : null),
-        el('span', { class: 'mono' }, fmtEur(s.eur)),
+        el('span', {}, s.name, s.custom ? null : el('span', { class: 'm mono' }, fmtDur(s.min)), s.surcharge ? el('span', { class: 'm surcharge-note mono' }, s.surcharge) : null),
+        el('span', { class: 'mono' }, s.custom ? 'po dogovoru' : fmtEur(s.eur)),
         state.step === 1 ? el('button', { type: 'button', class: 'x', 'aria-label': `Odstrani ${s.name}`, onclick: () => toggle(s.id) }, '×') : el('span')));
     }
     summary.append(list);
-    if (items.length > 1) summary.append(el('div', { class: 'sum-total' }, el('span', {}, `Skupaj · ${fmtDur(t.min)}`), el('span', { class: 'mono' }, fmtEur(t.eur))));
+    if (items.length > 1) summary.append(el('div', { class: 'sum-total' }, el('span', {}, `Skupaj · ${fmtDur(t.min)}`), el('span', { class: 'mono' }, fmtPrice(t))));
   }
 
   if (state.step >= 2 && state.date && state.time) {
@@ -247,17 +267,23 @@ function renderSummary() {
   }
 
   if (state.step === 1) {
-    summary.append(el('button', { type: 'button', class: 'btn btn-pink', disabled: items.length && !state.busy ? null : '', onclick: loadSlots },
+    summary.append(el('button', { type: 'button', class: 'btn btn-pink', disabled: items.length && !state.busy ? null : '', onclick: isRequest() ? () => go(3) : loadSlots },
       state.busy ? 'Iščem termin …' : 'Naprej', state.busy ? null : el('span', { class: 'arrow' }, '→')));
   } else if (state.step === 2) {
     summary.append(
       el('button', { type: 'button', class: 'btn btn-pink', disabled: state.time ? null : '', onclick: () => go(3) }, 'Naprej', el('span', { class: 'arrow' }, '→')),
       el('button', { type: 'button', class: 'back mono', onclick: () => go(1) }, '← uredi storitve'));
+  } else if (state.step === 3 && isRequest()) {
+    summary.append(
+      el('button', { type: 'submit', form: 'book-form', class: 'btn btn-pink', disabled: state.busy ? '' : null }, state.busy ? 'Pošiljam …' : 'Pošlji povpraševanje'),
+      el('p', { class: 'consent' }, 'To je povpraševanje, ne rezervacija: termin še ni rezerviran in te ne zavezuje k ničemur. Odgovorim ti in se dogovoriva za ceno in termin.'),
+      el('p', { class: 'consent' }, 'Kako ravnam z vašimi podatki, piše v ', el('a', { href: '/zasebnost.html', target: '_blank', rel: 'noopener' }, 'izjavi o zasebnosti'), '.'),
+      el('button', { type: 'button', class: 'back mono', onclick: () => go(1) }, '← uredi storitve'));
   } else if (state.step === 3) {
     summary.append(
       el('button', { type: 'submit', form: 'book-form', class: 'btn btn-pink', disabled: state.busy ? '' : null }, state.busy ? 'Rezerviram …' : 'Rezerviraj z obveznostjo plačila'),
       el('p', { class: 'consent' }, state.catalog.priceDisclaimer || ''),
-      el('p', { class: 'consent' }, `Plačilo ${fmtEur(t.eur)} ob obisku. Termin lahko brezplačno prestavite ali prekličete do 24 ur pred začetkom; pozneje ali ob neprihodu se lahko zaračuna nadomestilo do 50 % vrednosti rezervirane storitve.`),
+      el('p', { class: 'consent' }, `Plačilo ${fmtPrice(t)} ob obisku. Termin lahko brezplačno prestavite ali prekličete do 24 ur pred začetkom; pozneje ali ob neprihodu se lahko zaračuna nadomestilo do 50 % vrednosti rezervirane storitve.`),
       el('p', { class: 'consent' }, 'Z rezervacijo termina potrjujete, da ste prebrali in se strinjate z ',
         el('a', { href: '/pogoji.html#informacije', target: '_blank', rel: 'noopener' }, 'informacijami za stranke'), ' in s ',
         el('a', { href: '/pogoji.html#pogoji', target: '_blank', rel: 'noopener' }, 'pogoji poslovanja'), '. Kako ravnam z vašimi podatki, piše v ',
