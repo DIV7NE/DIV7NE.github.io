@@ -55,6 +55,7 @@ function renderPane() {
 
 function viewServices(view) {
   if (state.catalog.placeholderPrices) view.append(el('p', { class: 'notice mono' }, 'Cene in trajanja so začasne, pravi cenik pride kmalu.'));
+  if (state.catalog.priceDisclaimer) view.append(el('p', { class: 'notice' }, state.catalog.priceDisclaimer));
   for (const c of state.catalog.categories) {
     const list = el('ul', { class: 'svc-list' });
     for (const s of c.services) {
@@ -70,7 +71,11 @@ function viewServices(view) {
     }
     view.append(el('section', { class: 'cat' }, el('h2', {}, c.name), c.note ? el('p', { class: 'note' }, c.note) : el('p', { class: 'note' }), list));
   }
-  const { fees, priceNote } = state.catalog;
+  const { fees, onSite, priceNote } = state.catalog;
+  if (onSite) {
+    view.append(el('section', { class: 'cat' }, el('h2', {}, onSite.name), el('p', { class: 'note' }, onSite.note),
+      el('ul', { class: 'fees' }, ...onSite.items.map((f) => el('li', {}, el('span', {}, f.desc || f.name), el('span', { class: 'mono' }, `+ ${fmtEur(f.eur)}${f.unit ? ` ${f.unit}` : ''}`))))));
+  }
   if (fees) {
     view.append(el('section', { class: 'cat' }, el('h2', {}, fees.name),
       el('ul', { class: 'fees' }, ...fees.items.map((f) => el('li', {}, el('span', {}, f.name), el('span', { class: 'mono' }, `+ ${fmtEur(f.eur)}`))))));
@@ -251,6 +256,7 @@ function renderSummary() {
   } else if (state.step === 3) {
     summary.append(
       el('button', { type: 'submit', form: 'book-form', class: 'btn btn-pink', disabled: state.busy ? '' : null }, state.busy ? 'Rezerviram …' : 'Rezerviraj z obveznostjo plačila'),
+      el('p', { class: 'consent' }, state.catalog.priceDisclaimer || ''),
       el('p', { class: 'consent' }, `Plačilo ${fmtEur(t.eur)} ob obisku. Termin lahko brezplačno prestavite ali prekličete do 24 ur pred začetkom; pozneje ali ob neprihodu se lahko zaračuna nadomestilo do 50 % vrednosti rezervirane storitve.`),
       el('p', { class: 'consent' }, 'Z rezervacijo termina potrjujete, da ste prebrali in se strinjate z ',
         el('a', { href: '/pogoji.html#informacije', target: '_blank', rel: 'noopener' }, 'informacijami za stranke'), ' in s ',
