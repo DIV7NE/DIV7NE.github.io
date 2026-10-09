@@ -253,19 +253,3 @@ footer nav { display: flex; gap: 24px; }
 }
 [data-theme='light'] .svc .meta { color: var(--ink); }
 [data-theme='light'] .sum-list .x { font: 18px/1 system-ui, sans-serif; }
-
-
-/* header logo */
-.logo .lg { display: block; height: 30px; width: auto; overflow: visible; }
-.lg .i{fill:var(--ink)}.lg .p{fill:var(--pink)}
-
-.lg .k{animation:lg-strike .2s cubic-bezier(.3,0,.2,1) backwards}
-.lg .a{animation-delay:.5s}.lg .b{animation-delay:.9s}.lg .c{animation-delay:1.3s}.lg .d{animation-delay:1.7s}.lg .e{animation-delay:2.1s}
-.lg .cur{animation:lg-hop 2.5s steps(1,end) both}
-.lg .nail{animation:lg-blink 1.1s steps(1,end) 2.5s infinite}
-.lg .gl{animation:lg-gloss 6s ease-in-out 3.2s infinite;transform:translateX(-500px) skewX(-20deg)}
-@keyframes lg-strike{from{opacity:0;transform:translateY(-34px)}55%{opacity:1;transform:translateY(8px)}to{transform:none}}
-@keyframes lg-hop{0%{transform:translateX(-2484px)}20%{transform:translateX(-1865px)}36%{transform:translateX(-1248px)}52%{transform:translateX(-940px)}68%{transform:translateX(-558px)}84%,100%{transform:none}}
-@keyframes lg-blink{50%{opacity:.12}}
-@keyframes lg-gloss{0%{transform:translateX(-500px) skewX(-20deg)}22%,100%{transform:translateX(2900px) skewX(-20deg)}}
-
