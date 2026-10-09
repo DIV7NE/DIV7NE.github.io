@@ -51,7 +51,7 @@ h2 em, .manifesto-text em, .cta-title em { color: var(--pink); }
 
 /* manifesto: words light up with scroll */
 .manifesto { padding: clamp(120px, 18vw, 240px) var(--gutter); }
-.manifesto-text { margin: 0 auto; max-width: 1280px; font: 400 clamp(36px, 5.4vw, 84px)/1.08 var(--serif); letter-spacing: -0.015em; }
+.manifesto-text { text-wrap: balance; margin: 0 auto; max-width: 1280px; font: 400 clamp(36px, 5.4vw, 84px)/1.08 var(--serif); letter-spacing: -0.015em; }
 .pill { display: inline-block; width: 2.1em; height: 0.82em; border-radius: 999px; overflow: hidden; vertical-align: -0.06em; margin: 0 0.08em; background: var(--bg-3); }
 .pill img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
@@ -107,8 +107,8 @@ h2 em, .manifesto-text em, .cta-title em { color: var(--pink); }
 .lvl-meta { display: flex; justify-content: space-between; font: 13px var(--mono); }
 .lvl-cta { font: 13px var(--mono); color: var(--pink); }
 .base-line { margin: 28px 0 0; color: var(--ink-2); }
-.base-line .price-note { display: block; margin-top: 12px; color: var(--ink-3); font-size: 12px; line-height: 1.6; }
-.base-line b { color: var(--ink); font-weight: 500; }
+.base-line a { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+.base-line a:hover { color: var(--pink); }
 @media (max-width: 1000px) { .levels-list { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .levels-list { grid-template-columns: 1fr; } }
 
@@ -133,6 +133,7 @@ h2 em, .manifesto-text em, .cta-title em { color: var(--pink); }
 .info-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .info-list li { display: grid; grid-template-columns: 140px 1fr; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--line); }
 .info-list .k { color: var(--ink-3); }
+.info-list .loc-note { display: block; margin-top: 4px; color: var(--ink-2); }
 .ig-card { display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 32px; border-radius: var(--radius); background: var(--bg-2); border: 1px solid var(--line); text-decoration: none; transition: border-color 0.3s; }
 .ig-card:hover { border-color: var(--pink); }
 .ig-card .serif { font-size: clamp(32px, 4vw, 48px); line-height: 1.02; }

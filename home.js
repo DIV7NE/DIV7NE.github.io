@@ -141,10 +141,6 @@
           el('span', { class: 'lvl-meta' }, el('span', {}, `+ ${fmtDur(s.min)}`), el('span', {}, `+ ${fmtEur(s.eur)}`)),
           el('span', { class: 'lvl-cta' }, 'izberi ta paket →')))));
     });
-    const from = (id) => Math.min(...cat.categories.find((c) => c.id === id).services.map((s) => s.eur));
-    document.querySelector('.base-line').append('Osnova: naravni nohti od ', el('b', {}, fmtEur(from('naravni'))), ', podaljševanje od ', el('b', {}, fmtEur(from('podaljsevanje'))), '.',
-      cat.placeholderPrices ? el('span', { class: 'todo' }, ' začasne cene ') : '',
-      cat.priceNote ? el('span', { class: 'price-note mono' }, cat.priceNote) : '');
     const hours = document.querySelector('.hours');
     for (const d of [1, 2, 3, 4, 5, 6, 0]) {
       const h = cat.hours[d];
@@ -237,7 +233,8 @@
   // manifesto: words light up with scroll, photo pills open up
   const words = SplitText.create('.manifesto-text', { type: 'words' }).words;
   gsap.fromTo(words, { opacity: 0.12 }, { opacity: 1, ease: 'none', stagger: 0.1, scrollTrigger: { trigger: '.manifesto', start: 'top 75%', end: 'bottom 70%', scrub: true } });
-  gsap.utils.toArray('.pill').forEach((p) => gsap.from(p, { width: 0, marginLeft: 0, marginRight: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: p, start: 'top 80%' } }));
+  // one after the other: each opens when it scrolls in, and never together with the previous one
+  gsap.utils.toArray('.pill').forEach((p, i) => gsap.from(p, { width: 0, marginLeft: 0, marginRight: 0, duration: 1.2, delay: i * 0.9, ease: 'expo.out', scrollTrigger: { trigger: p, start: 'top 80%' } }));
 
   // interlude: the two type rows slide against each other over a drifting strip of photos
   gsap.timeline({ scrollTrigger: { trigger: '.interlude', start: 'top bottom', end: 'bottom top', scrub: true } })
