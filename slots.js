@@ -38,20 +38,21 @@
     };
   }
 
+  // Open time ranges on one date. Nothing is bookable unless the owner opened it for that date,
+  // and an appointment has to fit inside one range.
+  const openRanges = (schedule, key) => (schedule.days && schedule.days[key]) || [];
+
   // Free start times ("HH:MM") on one date for an appointment of `duration` minutes.
   function freeStarts(schedule, bookings, key, duration, now) {
-    if (schedule.closedDates.includes(key)) return [];
-    const hours = schedule.hours[parseDate(key).getDay()];
-    if (!hours) return [];
-    const open = toMin(hours[0]);
-    const close = toMin(hours[1]);
     const earliest = now.getTime() + schedule.minNoticeHours * 3600e3;
     const taken = bookings.filter((b) => b.date === key).map((b) => [toMin(b.time), toMin(b.time) + b.min]);
     const out = [];
-    for (let t = open; t + duration <= close; t += schedule.stepMin) {
-      if (at(key, t).getTime() < earliest) continue;
-      if (taken.some(([s, e]) => t < e && t + duration > s)) continue;
-      out.push(fromMin(t));
+    for (const [from, to] of openRanges(schedule, key)) {
+      for (let t = toMin(from); t + duration <= toMin(to); t += schedule.stepMin) {
+        if (at(key, t).getTime() < earliest) continue;
+        if (taken.some(([s, e]) => t < e && t + duration > s)) continue;
+        out.push(fromMin(t));
+      }
     }
     return out;
   }
@@ -69,5 +70,5 @@
     return result;
   }
 
-  return { dateKey, parseDate, resolveSelection, freeStarts, availability };
+  return { dateKey, parseDate, toMin, at, resolveSelection, openRanges, freeStarts, availability };
 });

@@ -92,7 +92,7 @@ button { font: inherit; color: inherit; }
 footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding: 32px var(--gutter) 40px; color: var(--ink-3); }
 footer a { text-decoration: none; }
 footer a:hover { color: var(--ink); }
-footer nav { display: flex; gap: 24px; }
+footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 
 /* booking */
 .book { padding: 104px var(--gutter) 120px; max-width: 1280px; margin: 0 auto; }
@@ -117,11 +117,18 @@ footer nav { display: flex; gap: 24px; }
 .field .hint { margin: 6px 0 0; color: var(--ink-3); font-size: 13px; }
 .fees { list-style: none; margin: 12px 0 0; padding: 0; }
 .fees li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
-.fees li .mono { white-space: nowrap; text-align: right; }
+.fees li > .mono { white-space: nowrap; text-align: right; }
+.fees .desc { display: block; margin-top: 2px; color: var(--ink-3); font-size: 14px; }
+.lead-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 32px 0 0; }
+.prose .first-slot { margin: 0 0 20px; display: grid; gap: 12px; }
+.prose .first-slot .when { margin: 0; }
+.prose .notice, .prose .error { margin: 24px 0; }
+.consent-check { display: flex; align-items: flex-start; gap: 10px; color: var(--ink-2); font-size: 14px; cursor: pointer; }
+.consent-check input { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--pink); }
 .price-note { margin: 40px 0 0; color: var(--ink-3); font-size: 12px; line-height: 1.6; }
 .svc-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .svc {
-  width: 100%; display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 16px;
+  width: 100%; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 16px;
   padding: 16px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2);
   text-align: left; cursor: pointer;
   transition: border-color 0.25s, background 0.25s, transform 0.2s var(--ease);
@@ -248,8 +255,9 @@ footer nav { display: flex; gap: 24px; }
 /* the leader sits on the price's line (vertically centred); on phones there is no room, so it is dropped */
 [data-theme='light'] .svc .dots { display: block; align-self: center; position: relative; top: 5px; height: 0; border-bottom: 3px dotted var(--ink); }
 @media (max-width: 560px) {
-  [data-theme='light'] .svc { grid-template-columns: 22px 1fr auto; }
+  [data-theme='light'] .svc { grid-template-columns: 22px minmax(0, 1fr) auto; }
   [data-theme='light'] .svc .dots { display: none; }
 }
 [data-theme='light'] .svc .meta { color: var(--ink); }
 [data-theme='light'] .sum-list .x { font: 18px/1 system-ui, sans-serif; }
+

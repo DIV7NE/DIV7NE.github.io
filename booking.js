@@ -160,9 +160,11 @@ function viewForm(view) {
   form.append(
     field('f-name', 'Ime in priimek', el('input', { id: 'f-name', name: 'name', autocomplete: 'name', required: '', maxlength: '80' })),
     field('f-phone', 'Telefon', el('input', { id: 'f-phone', name: 'phone', type: 'tel', autocomplete: 'tel', required: '', maxlength: '20', pattern: '\\+?[0-9 \\(\\)\\/\\-]{6,20}' })),
-    field('f-email', 'E-pošta (neobvezno)', el('input', { id: 'f-email', name: 'email', type: 'email', autocomplete: 'email', maxlength: '120' })),
+    field('f-email', 'E-pošta (neobvezno, za potrditev in povezavo za spremembo termina)', el('input', { id: 'f-email', name: 'email', type: 'email', autocomplete: 'email', maxlength: '120' })),
     field('f-note', needNote ? 'Opiši, kaj želiš (obvezno)' : 'Opomba ali inspiracija (neobvezno)', el('textarea', { id: 'f-note', name: 'note', maxlength: '500', 'aria-describedby': 'f-note-hint', ...(needNote ? { required: '', minlength: '5' } : {}), placeholder: 'npr. želim kratke mandljeve oblike, inspiracija na IG …' }),
       (needNote ? 'Opiši, kaj želiš in kako si predstavljaš. Odgovorim ti in se dogovoriva za ceno in termin. ' : '') + 'Prosim, ne vpisuj podatkov o zdravju (npr. bolezni nohtov ali kože). O tem se pogovoriva v salonu.'),
+    state.catalog.withdrawalConsent && !needNote ? el('label', { class: 'consent-check' }, el('input', { type: 'checkbox', name: 'consent', required: '' }),
+      'Želim, da se storitev opravi pred iztekom 14-dnevnega roka za odstop od pogodbe. Vem, da pravico do odstopa izgubim, ko je storitev v celoti opravljena.') : null,
     el('div', { class: 'hp', 'aria-hidden': 'true' }, el('label', {}, 'Spletna stran', el('input', { name: 'website', tabindex: '-1', autocomplete: 'off' }))),
   );
   form.addEventListener('submit', submit);
@@ -181,7 +183,7 @@ async function submit(e) {
     state.done = await api('/api/bookings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, services: state.selected, ...(isRequest() ? {} : { date: state.date, time: state.time }) }),
+      body: JSON.stringify({ ...data, consent: data.consent === 'on', services: state.selected, ...(isRequest() ? {} : { date: state.date, time: state.time }) }),
     });
     state.busy = false;
     summary.hidden = true;
@@ -230,6 +232,8 @@ function viewDone(view) {
       el('span', { class: 'mono' }, b.services.join(' + ')),
       el('p', { class: 'when' }, fmtDay(b.date), el('br'), `${b.time} – ${addMin(b.time, b.min)}`),
       el('span', { class: 'mono' }, `${fmtDur(b.min)} · ${fmtEur(b.eur)}`)),
+    b.emailed ? el('p', { class: 'muted' }, 'Potrditev sem ti poslala na e-pošto.') : null,
+    b.manage ? el('p', { class: 'notice' }, 'Termin lahko brezplačno prestaviš ali prekličeš do 24 ur pred začetkom: ', el('a', { href: b.manage }, 'odpri svoj termin'), '. Shrani si to povezavo, če nisi vpisala e-pošte.') : null,
     el('p', { class: 'muted' }, 'Če bo kaj spremembe, te pokličem ali ti pišem. Če termina ne moreš, mi to čim prej sporoči, kot piše v ', el('a', { href: '/pogoji.html' }, 'pogojih poslovanja'), '.'),
     el('div', { class: 'hero-actions' },
       el('a', { class: 'btn btn-pink', href: icsLink(b), download: 'termin-ms-nailartist.ics' }, 'Dodaj v koledar'),
