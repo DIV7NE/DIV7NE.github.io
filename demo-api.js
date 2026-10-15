@@ -103,6 +103,7 @@
     let body = {};
     if (method === 'POST') { try { body = JSON.parse(opts.body || ''); } catch { return reply([400, { error: 'Neveljavna zahteva.' }]); } }
     if (route.startsWith('/admin/')) {
+      if (window.msDemoLocked) return new Promise(() => {}); // the password screen is showing
       const name = route.slice(7);
       const fn = Object.hasOwn(admin, name) && (name === 'state' ? method === 'GET' : method === 'POST') ? admin[name] : null;
       if (!fn) return reply([404, { error: 'Strani ni mogoče najti.' }]);
